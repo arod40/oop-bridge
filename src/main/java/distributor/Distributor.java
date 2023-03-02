@@ -67,5 +67,7 @@ public interface Distributor {
 
 	void track(Long codeId);
 
+	boolean isOrderShipped(Long codeId);
+
 
 }

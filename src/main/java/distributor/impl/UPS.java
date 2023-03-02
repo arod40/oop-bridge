@@ -94,4 +94,9 @@ public class UPS implements Distributor {
     public void track(Long codeId) {
         LOGGER.log(Level.INFO, ordersByCodeId.get(codeId).toString());
     }
+
+    @Override
+    public boolean isOrderShipped(Long codeId) {
+        return ordersByCodeId.get(codeId).getIsCanceled();
+    }
 }
