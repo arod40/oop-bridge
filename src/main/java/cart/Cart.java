@@ -16,9 +16,8 @@ public class Cart {
 	 * @param quantity
 	 */
 	public Cart addLine(Product product, int quantity) {
-		// aggregation
 		for (CartLineItem line : orderList) {
-			if (line.getProduct() == product) { // left == on purpose!
+			if (line.getProduct() == product) {
 				line.setQuantity(line.getQuantity() + quantity);
 				return this;
 			}
