@@ -3,18 +3,13 @@ package store.impl;
 import cart.Cart;
 import cart.CartLineItem;
 import distributor.Distributor;
-import distributor.impl.FedEx;
 import store.Store;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Amazon implements Store {
-    private static Logger LOGGER = Logger.getLogger(Amazon.class.getName());
-
     private static Map<Long, Store.Order> ordersByOrderId = new HashMap<>();
 
     private static Long incrementalOrderId = 0l;
@@ -26,7 +21,7 @@ public class Amazon implements Store {
         incrementalOrderId++;
         Order order = new Order(incrementalOrderId, c, toAddr);
         ordersByOrderId.put(incrementalOrderId, order);
-        Long codeId = distributor.fileOrder("Amazon Address", toAddr, "order-" + incrementalOrderId);
+        Long codeId = distributor.fileOrder("Amazon Address", toAddr, "AmazonOrder-" + incrementalOrderId);
         order.setCodeId(codeId);
         distributor.pickupService(codeId);
         _describeOrder(order, distributor.cost(codeId));
@@ -34,14 +29,14 @@ public class Amazon implements Store {
     }
 
     private void _describeOrder(Order order, BigDecimal distributorQuote){
-        LOGGER.log(Level.INFO, "=== Order Summary ===");
-        LOGGER.log(Level.INFO, "Items: ITEM NAME --------- QTY -------- PRICE");
+        System.out.println("=== Order Summary ===");
+        System.out.println("Items: ITEM NAME --------- QTY -------- PRICE");
         for (CartLineItem cli: order.getCart().getOrderList()){
-            LOGGER.log(Level.INFO, cli.getProduct().getName() + " --------- " + cli.getQuantity() + " -------- " + cli.getSubTotal());
+            System.out.println(cli.getProduct().getName() + " --------- " + cli.getQuantity() + " -------- " + cli.getSubTotal());
         }
-        LOGGER.log(Level.INFO, "----------------------------------------------");
-        LOGGER.log(Level.INFO, "Delivery Service:", distributorQuote.toString());
-        LOGGER.log(Level.INFO, "TOTAL (goods + delivery):", order.getCart().getTotal().add(distributorQuote));
+        System.out.println("----------------------------------------------");
+        System.out.println("Delivery Service:" + distributorQuote.toString());
+        System.out.println("TOTAL (goods + delivery):" + order.getCart().getTotal().add(distributorQuote));
     }
 
     @Override
@@ -62,22 +57,22 @@ public class Amazon implements Store {
 
     @Override
     public void tracking(Long orderId) {
-        LOGGER.log(Level.INFO, "=== Amazon Info. ===");
+        System.out.println("=== Amazon Info. ===");
 
         if (!ordersByOrderId.containsKey(orderId)){
-            LOGGER.log(Level.INFO, "    There is no record of an order with id: " + orderId);
+            System.out.println("    There is no record of an order with id: " + orderId);
         }
         else{
             Order order = ordersByOrderId.get(orderId);
 
             if (order.getIsCanceled()) {
-                LOGGER.log(Level.INFO, "    Order was CANCELED");
+                System.out.println("    Order was CANCELED");
             }
             else if (!order.getIsPayed()){
-                LOGGER.log(Level.INFO, "    Order was CREATED (but has not been processed yet)");
+                System.out.println("    Order was CREATED (but has not been processed yet)");
             }
             else{
-                LOGGER.log(Level.INFO, "    Order was PROCESSED and sent to the distributor");
+                System.out.println("    Order was PROCESSED and sent to the distributor");
                 distributor.track(ordersByOrderId.get(orderId).getCodeId());
             }
         }
@@ -85,6 +80,16 @@ public class Amazon implements Store {
 
     @Override
     public void setDistributor(Distributor distributor) {
-        this.distributor = new FedEx();
+        this.distributor = distributor;
+    }
+
+    @Override
+    public String getHandleOfOrder(Long orderId) {
+        return "AmazonOrder-" + orderId;
+    }
+
+    @Override
+    public boolean isOrderCanceled(Long orderId) {
+        return ordersByOrderId.get(orderId).getIsCanceled();
     }
 }

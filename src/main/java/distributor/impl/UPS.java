@@ -1,19 +1,14 @@
 package distributor.impl;
 
 import distributor.Distributor;
-import store.Store;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class UPS implements Distributor {
-    private static Logger LOGGER = Logger.getLogger(UPS.class.getName());
-
     private static BigDecimal wrappingCost = new BigDecimal(10);
 
     private static BigDecimal pickupCost = new BigDecimal(100);
@@ -93,35 +88,39 @@ public class UPS implements Distributor {
 
     @Override
     public void track(Long codeId) {
-        LOGGER.log(Level.INFO, "=== UPS Info. ===");
+        System.out.println("=== UPS Info. ===");
 
         if (!ordersByCodeId.containsKey(codeId)){
-            LOGGER.log(Level.INFO, "    There is no record of an order with id: " + codeId);
+            System.out.println("    There is no record of an order with id: " + codeId);
         }
         else{
             Order order = ordersByCodeId.get(codeId);
 
             if (order.getIsCanceled()) {
-                LOGGER.log(Level.INFO, "    Order was CANCELED");
+                System.out.println("    Order was CANCELED");
             }
             else if(!order.getIsPayed()){
-                LOGGER.log(Level.INFO, "    Order is NOT CONFIRMED yet");
+                System.out.println("    Order is NOT CONFIRMED yet");
             }
             else if (!order.getIsShipped()){
-                LOGGER.log(Level.INFO, "    Order is at "+ order.getFromAddr());
+                System.out.println("    Order is at "+ order.getFromAddr());
             }
             else if (!order.getIsDelivered()){
-                LOGGER.log(Level.INFO, "    Order was shipped to "+ order.getToAddr());
+                System.out.println("    Order was shipped to "+ order.getToAddr());
             }
             else{
-                LOGGER.log(Level.INFO, "    Order was delivered to "+ order.getToAddr());
+                System.out.println("    Order was delivered to "+ order.getToAddr());
             }
         }
-        LOGGER.log(Level.INFO, ordersByCodeId.get(codeId).toString());
     }
 
     @Override
     public boolean isOrderShipped(Long codeId) {
+        return ordersByCodeId.get(codeId).getIsShipped();
+    }
+
+    @Override
+    public boolean isOrderCanceled(Long codeId) {
         return ordersByCodeId.get(codeId).getIsCanceled();
     }
 }

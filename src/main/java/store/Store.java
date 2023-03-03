@@ -33,4 +33,9 @@ public interface Store {
 	void tracking(Long orderId);
 
 	void setDistributor(Distributor distributor);
+
+	//	This is just for testing purposes
+	String getHandleOfOrder(Long orderId);
+
+	boolean isOrderCanceled(Long orderId);
 }

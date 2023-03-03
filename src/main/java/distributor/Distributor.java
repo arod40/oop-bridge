@@ -24,14 +24,15 @@ public interface Distributor {
 			this.fromAddr = fromAddr;
 			this.toAddr = toAddr;
 			this.customerHandle = customerHandle;
+			this.cost = new BigDecimal(0);
 		}
 
 		public void addCost(BigDecimal cost) {
-			this.cost.add(cost);
+			this.cost = this.cost.add(cost);
 		}
 
 		public void substractCost(BigDecimal cost) {
-			this.cost.subtract(cost);
+			this.cost = this.cost.subtract(cost);
 		}
 	}
 
@@ -64,5 +65,6 @@ public interface Distributor {
 
 	boolean isOrderShipped(Long codeId);
 
-
+	// For testig purposes only
+	boolean isOrderCanceled(Long codeId);
 }
