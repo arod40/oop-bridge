@@ -1,6 +1,7 @@
 package store.impl;
 
 import cart.Cart;
+import cart.CartLineItem;
 import distributor.Distributor;
 import distributor.impl.FedEx;
 import store.Store;
@@ -28,13 +29,19 @@ public class Walmart implements Store {
 		Long codeId = distributor.fileOrder("Walmart Address", toAddr, "order-" + incrementalOrderId);
 		order.setCodeId(codeId);
 		distributor.wrap(codeId);
-		describeOrder(order, distributor.cost(codeId));
+		_describeOrder(order, distributor.cost(codeId));
 		return incrementalOrderId;
 	}
 
-	private void describeOrder(Order order, BigDecimal distributorQuote){
-		LOGGER.log(Level.INFO, order.toString());
-		LOGGER.log(Level.INFO, distributorQuote.toString());
+	private void _describeOrder(Order order, BigDecimal distributorQuote){
+		LOGGER.log(Level.INFO, "=== Order Summary ===");
+		LOGGER.log(Level.INFO, "Items: ITEM NAME --------- QTY -------- PRICE");
+		for (CartLineItem cli: order.getCart().getOrderList()){
+			LOGGER.log(Level.INFO, cli.getProduct().getName() + " --------- " + cli.getQuantity() + " -------- " + cli.getSubTotal());
+		}
+		LOGGER.log(Level.INFO, "----------------------------------------------");
+		LOGGER.log(Level.INFO, "Delivery Service:", distributorQuote.toString());
+		LOGGER.log(Level.INFO, "TOTAL (goods + delivery):", order.getCart().getTotal().add(distributorQuote));
 	}
 
 	@Override

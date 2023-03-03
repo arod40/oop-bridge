@@ -93,6 +93,35 @@ public class FedEx implements Distributor {
 
     @Override
     public void track(Long codeId) {
+        LOGGER.log(Level.INFO, "=== FedEx Info. ===");
+
+        if (!ordersByCodeId.containsKey(codeId)){
+            LOGGER.log(Level.INFO, "    There is no record of an order with id: " + codeId);
+        }
+        else{
+            Order order = ordersByCodeId.get(codeId);
+
+            if (order.getIsCanceled()) {
+                LOGGER.log(Level.INFO, "    Order was CANCELED");
+            }
+            else if(!order.getIsPayed()){
+                LOGGER.log(Level.INFO, "    Order is NOT CONFIRMED yet");
+            }
+            else if (!order.getIsShipped()){
+                LOGGER.log(Level.INFO, "    Order is at "+ order.getFromAddr());
+            }
+            else if (!order.getIsDelivered()){
+                LOGGER.log(Level.INFO, "    Order was shipped to "+ order.getToAddr());
+            }
+            else{
+                LOGGER.log(Level.INFO, "    Order was delivered to "+ order.getToAddr());
+            }
+        }
         LOGGER.log(Level.INFO, ordersByCodeId.get(codeId).toString());
+    }
+
+    @Override
+    public boolean isOrderShipped(Long codeId) {
+        return ordersByCodeId.get(codeId).getIsShipped();
     }
 }

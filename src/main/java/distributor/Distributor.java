@@ -33,11 +33,6 @@ public interface Distributor {
 		public void substractCost(BigDecimal cost) {
 			this.cost.subtract(cost);
 		}
-
-		@Override
-		public String toString() {
-			return this.codeId + " " + this.fromAddr + " " + this.toAddr;
-		}
 	}
 
 	enum Service{

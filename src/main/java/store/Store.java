@@ -23,11 +23,6 @@ public interface Store {
 			this.cart = cart;
 			this.toAddr = toAddr;
 		}
-
-		@Override
-		public String toString() {
-			return "Order " + cart.getTotal();
-		}
 	}
 	Long previewOrder(String toAddr, Cart c);
 
